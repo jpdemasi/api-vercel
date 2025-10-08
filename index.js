@@ -27,7 +27,7 @@ const getSupabaseHeaders = (method = 'GET') => {
 
 
 app.post('/login', async (req, res) => {
-    // Usamos 'usuario' y 'clave' tal como lo envía el frontend
+
     const { usuario, clave } = req.body; 
 
     if (!usuario || !clave) {
@@ -42,7 +42,7 @@ app.post('/login', async (req, res) => {
         const result = await response.json();
 
         if (result && result.length > 0) {
-            // Login exitoso: se devuelve el objeto de usuario.
+           
             res.status(200).json({ 
                 success: true, 
                 user: result[0],
@@ -58,10 +58,7 @@ app.post('/login', async (req, res) => {
 });
 
 
-// ----------------------------------------------------------------------
-// 2. ENDPOINT DE LECTURA (READ) DE TRANSACCIONES - PARTE DEL CRUD
-// ----------------------------------------------------------------------
-// Endpoint para obtener todas las transacciones de un usuario específico
+
 app.post('/transacciones', async (req, res) => {
     const { userId } = req.body;
 
@@ -69,8 +66,6 @@ app.post('/transacciones', async (req, res) => {
         return res.status(400).json({ error: 'ID de usuario es requerido para obtener transacciones.' });
     }
 
-    // Consulta a la tabla 'Transacciones', uniendo con 'Categorias' y 'Metodos_Pago'
-    // Asumimos: Tablas 'Transacciones', 'Categorias', 'Metodos_Pago' y campos 'id_categoria' y 'id_metodo_pago'
     const transaccionesUrl = `${SUPABASE_URL}/rest/v1/Transacciones?select=*,id_categoria(*),id_metodo_pago(*)&user_id=eq.${userId}&order=fecha.desc`;
 
     try {
@@ -78,15 +73,15 @@ app.post('/transacciones', async (req, res) => {
         const result = await response.json();
         
         if (response.ok) {
-            // Transformación para que el front reciba el nombre de las relaciones en español
+           
             const transaccionesFormateadas = result.map(t => ({
                 id: t.id,
                 monto: t.monto,
                 descripcion: t.descripcion,
-                fecha: t.fecha, // Asumimos que el campo es 'fecha' en la BD
-                nombre_categoria: t.id_categoria ? t.id_categoria.nombre : 'Sin Categoría', // Asumimos que el campo es 'nombre' en Categorias
+                fecha: t.fecha,
+                nombre_categoria: t.id_categoria ? t.id_categoria.nombre : 'Sin Categoría', 
                 id_categoria: t.id_categoria ? t.id_categoria.id : null,
-                nombre_metodo_pago: t.id_metodo_pago ? t.id_metodo_pago.nombre : 'Sin Método', // Asumimos que el campo es 'nombre' en Metodos_Pago
+                nombre_metodo_pago: t.id_metodo_pago ? t.id_metodo_pago.nombre : 'Sin Método', 
                 id_metodo_pago: t.id_metodo_pago ? t.id_metodo_pago.id : null,
             }));
 
@@ -103,7 +98,7 @@ app.post('/transacciones', async (req, res) => {
 
 
 app.post('/transacciones/crear', async (req, res) => {
-    // transactionData debe incluir: user_id, monto, descripcion, fecha, id_categoria, id_metodo_pago
+
     const transactionData = req.body; 
 
     if (!transactionData.user_id || !transactionData.monto || !transactionData.descripcion) {
@@ -141,7 +136,7 @@ app.put('/transacciones/:id', async (req, res) => {
     }
 
     try {
-        // PATCH es el método recomendado para actualizar parcialmente
+ 
         const response = await fetch(`${SUPABASE_URL}/rest/v1/Transacciones?id=eq.${id}`, {
             method: 'PATCH',
             headers: getSupabaseHeaders('PATCH'),
