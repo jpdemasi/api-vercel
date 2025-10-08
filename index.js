@@ -29,6 +29,27 @@ app.get('/traerLista', async (req, res) => {
   }
 });
 
+app.get('/traerUsuarios', async (req, res) => {
+  const myHeaders = {
+    "apikey": API_KEY,
+    "Content-Type": "application/json"
+  };
+
+  const requestOptions = {
+    method: "GET",
+    headers: myHeaders,
+    redirect: "follow"
+  };
+
+  try {
+    const response = await fetch("https://gjjdrpqrkcxifwouyksh.supabase.co/rest/v1/usuarios?select=*", requestOptions);
+    const result = await response.json();
+    res.json(result);
+  } catch (error) {
+    console.error('Error en traerUsuarios:', error);
+  }
+});
+
 if (process.env.NODE_ENV !== 'production') {
   app.listen(PORT, () => {
     console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
