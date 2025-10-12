@@ -143,8 +143,8 @@ app.patch('/transacciones/actualizar', async (req, res) => {
 });
 
 // NUEVO ENDPOINT PARA ELIMINAR (DELETE) - Corregido para que coincida con el frontend
-app.delete('/transacciones/eliminar', async (req, res) => {
-    const { id } = req.body;
+app.delete('/transacciones/:id', async (req, res) => {
+    const { id } = req.params;
 
     if (!id) {
         return res.status(400).json({ error: 'ID de transacción es requerido para eliminar.' });
@@ -163,10 +163,11 @@ app.delete('/transacciones/eliminar', async (req, res) => {
             res.status(400).json({ error: result.message || 'Error al eliminar la transacción en Supabase.' });
         }
     } catch (error) {
-        console.error("Error en /transacciones/eliminar:", error);
+        console.error("Error en /transacciones/:id:", error);
         res.status(500).json({ error: 'Error del servidor al eliminar la transacción.' });
     }
 });
+
 
 app.get('/categorias', async (req, res) => {
     try {
