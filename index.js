@@ -3,14 +3,12 @@ const app = express();
 const cors = require('cors');
 const fetch = require('node-fetch');
 
-
 const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
-
 const SUPABASE_API_KEY = process.env.SUPABASE_API_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdqamRycHFya2N4aWZ3b3V5a3NoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg2NDc3NzgsImV4cCI6MjA3NDIyMzc3OH0.EX9qmKTVf1lLfvd6TZc0ZtK7jaZXbuijMzsFVe2Tw5g";
-const SUPABASE_URL = "https://gjjdrpqrkcxifwouyksh.supabase.co"; 
+const SUPABASE_URL = "https://gjjdrpqrkcxifwouyksh.supabase.co";
 
 const getSupabaseHeaders = (method = 'GET') => {
     const headers = {
@@ -24,17 +22,13 @@ const getSupabaseHeaders = (method = 'GET') => {
     return headers;
 };
 
-
-
 app.post('/login', async (req, res) => {
-
-    const { usuario, clave } = req.body; 
+    const { usuario, clave } = req.body;
 
     if (!usuario || !clave) {
         return res.status(400).json({ success: false, message: 'Usuario y clave son requeridos' });
     }
 
-    // Consulta a la tabla 'usuarios'
     const loginUrl = `${SUPABASE_URL}/rest/v1/usuarios?select=*&usuario=eq.${encodeURIComponent(usuario)}&pass=eq.${encodeURIComponent(clave)}`;
 
     try {
@@ -42,9 +36,8 @@ app.post('/login', async (req, res) => {
         const result = await response.json();
 
         if (result && result.length > 0) {
-           
-            res.status(200).json({ 
-                success: true, 
+            res.status(200).json({
+                success: true,
                 user: result[0],
                 message: 'Inicio de sesión exitoso'
             });
@@ -56,8 +49,6 @@ app.post('/login', async (req, res) => {
         res.status(500).json({ error: 'Error del servidor al iniciar sesión' });
     }
 });
-
-
 
 app.post('/transacciones', async (req, res) => {
     const { userId } = req.body;
@@ -73,15 +64,14 @@ app.post('/transacciones', async (req, res) => {
         const result = await response.json();
         
         if (response.ok) {
-           
             const transaccionesFormateadas = result.map(t => ({
                 id: t.id,
                 monto: t.monto,
                 descripcion: t.descripcion,
                 fecha: t.fecha,
-                nombre_categoria: t.id_categoria ? t.id_categoria.nombre : 'Sin Categoría', 
+                nombre_categoria: t.id_categoria ? t.id_categoria.nombre : 'Sin Categoría',
                 id_categoria: t.id_categoria ? t.id_categoria.id : null,
-                nombre_metodo_pago: t.id_metodo_pago ? t.id_metodo_pago.nombre : 'Sin Método', 
+                nombre_metodo_pago: t.id_metodo_pago ? t.id_metodo_pago.nombre : 'Sin Método',
                 id_metodo_pago: t.id_metodo_pago ? t.id_metodo_pago.id : null,
             }));
 
@@ -95,11 +85,8 @@ app.post('/transacciones', async (req, res) => {
     }
 });
 
-
-
 app.post('/transacciones/crear', async (req, res) => {
-
-    const transactionData = req.body; 
+    const transactionData = req.body;
 
     if (!transactionData.user_id || !transactionData.monto || !transactionData.descripcion) {
         return res.status(400).json({ error: 'Faltan campos obligatorios para crear la transacción.' });
@@ -125,18 +112,15 @@ app.post('/transacciones/crear', async (req, res) => {
     }
 });
 
-
-
-app.put('/transacciones/:id', async (req, res) => {
-    const { id } = req.params;
-    const updateData = req.body;
+// NUEVO ENDPOINT PARA ACTUALIZAR (PATCH) - Corregido para que coincida con el frontend
+app.patch('/transacciones/actualizar', async (req, res) => {
+    const { id, ...updateData } = req.body;
 
     if (!id) {
         return res.status(400).json({ error: 'ID de transacción es requerido para actualizar.' });
     }
 
     try {
- 
         const response = await fetch(`${SUPABASE_URL}/rest/v1/Transacciones?id=eq.${id}`, {
             method: 'PATCH',
             headers: getSupabaseHeaders('PATCH'),
@@ -148,7 +132,7 @@ app.put('/transacciones/:id', async (req, res) => {
         if (response.ok && result.length > 0) {
             res.status(200).json({ success: true, transaccion: result[0], message: 'Transacción actualizada exitosamente.' });
         } else if (response.ok && result.length === 0) {
-             res.status(404).json({ error: 'No se encontró la transacción con el ID proporcionado.' });
+            res.status(404).json({ error: 'No se encontró la transacción con el ID proporcionado.' });
         } else {
             res.status(400).json({ error: result.message || 'Error al actualizar la transacción en Supabase.' });
         }
@@ -158,10 +142,9 @@ app.put('/transacciones/:id', async (req, res) => {
     }
 });
 
-
-
-app.delete('/transacciones/:id', async (req, res) => {
-    const { id } = req.params;
+// NUEVO ENDPOINT PARA ELIMINAR (DELETE) - Corregido para que coincida con el frontend
+app.delete('/transacciones/eliminar', async (req, res) => {
+    const { id } = req.body;
 
     if (!id) {
         return res.status(400).json({ error: 'ID de transacción es requerido para eliminar.' });
@@ -185,7 +168,6 @@ app.delete('/transacciones/:id', async (req, res) => {
     }
 });
 
-
 app.get('/categorias', async (req, res) => {
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/Categorias?select=*`, { method: "GET", headers: getSupabaseHeaders() });
@@ -202,7 +184,6 @@ app.get('/categorias', async (req, res) => {
     }
 });
 
-
 app.get('/metodos_pago', async (req, res) => {
     try {
         const response = await fetch(`${SUPABASE_URL}/rest/v1/Metodos_Pago?select=*`, { method: "GET", headers: getSupabaseHeaders() });
@@ -218,7 +199,6 @@ app.get('/metodos_pago', async (req, res) => {
         res.status(500).json({ error: 'Error del servidor al obtener métodos de pago.' });
     }
 });
-
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
