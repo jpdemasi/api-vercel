@@ -144,6 +144,8 @@ app.patch('/transacciones/actualizar', async (req, res) => {
 
 // NUEVO ENDPOINT PARA ELIMINAR (DELETE) - Corregido para que coincida con el frontend
 app.delete('/transacciones/:id', async (req, res) => {
+
+    console.log("🔍 DELETE recibido con ID:", req.params.id); 
     const { id } = req.params;
 
     if (!id) {
