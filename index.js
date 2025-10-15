@@ -142,7 +142,7 @@ app.patch('/transacciones/actualizar', async (req, res) => {
     }
 });
 
-// NUEVO ENDPOINT PARA ELIMINAR (DELETE) - Corregido para que coincida con el frontend
+
 app.delete('/transacciones/:id', async (req, res) => {
 
     console.log("🔍 DELETE recibido con ID:", req.params.id); 
@@ -205,7 +205,7 @@ app.get('/metodos_pago', async (req, res) => {
 
 if (process.env.NODE_ENV !== 'production') {
     app.listen(PORT, () => {
-        console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
+        console.log(`Servidor corriendo en http://localhost:${PORT}`);
     });
 }
 
