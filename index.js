@@ -112,7 +112,6 @@ app.post('/transacciones/crear', async (req, res) => {
     }
 });
 
-// NUEVO ENDPOINT PARA ACTUALIZAR (PATCH) - Corregido para que coincida con el frontend
 app.patch('/transacciones/actualizar', async (req, res) => {
     const { id, ...updateData } = req.body;
 
